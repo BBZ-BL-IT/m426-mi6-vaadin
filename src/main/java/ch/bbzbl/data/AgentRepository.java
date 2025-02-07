@@ -1,12 +1,12 @@
 package ch.bbzbl.data;
 
-import ch.bbzbl.entities.SamplePerson;
+import ch.bbzbl.entities.Agent;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface SamplePersonRepository
+public interface AgentRepository
         extends
-            JpaRepository<SamplePerson, Long>,
-            JpaSpecificationExecutor<SamplePerson> {
+            JpaRepository<Agent, Long>,
+            JpaSpecificationExecutor<Agent> {
 
 }

@@ -1,7 +1,7 @@
 package ch.bbzbl.views.agents;
 
-import ch.bbzbl.entities.SamplePerson;
-import ch.bbzbl.services.SamplePersonService;
+import ch.bbzbl.entities.Agent;
+import ch.bbzbl.services.AgentService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -34,37 +34,37 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.vaadin.lineawesome.LineAwesomeIconUrl;
 
 @PageTitle("Agents")
-@Route("/:samplePersonID?/:action?(edit)")
+@Route("/:agentID?/:action?(edit)")
 @Menu(order = 0, icon = LineAwesomeIconUrl.COLUMNS_SOLID)
 @RouteAlias("")
 @Uses(Icon.class)
 public class AgentsView extends Div implements BeforeEnterObserver {
 
-    private final String SAMPLEPERSON_ID = "samplePersonID";
-    private final String SAMPLEPERSON_EDIT_ROUTE_TEMPLATE = "/%s/edit";
+    private final String AGENT_ID = "agentID";
+    private final String AGENT_EDIT_ROUTE_TEMPLATE = "/%s/edit";
 
-    private final Grid<SamplePerson> grid = new Grid<>(SamplePerson.class, false);
+    private final Grid<Agent> grid = new Grid<>(Agent.class, false);
 
     private TextField firstName;
     private TextField lastName;
     private TextField email;
     private TextField phone;
     private DatePicker dateOfBirth;
-    private TextField occupation;
+    private TextField codeName;
     private TextField role;
-    private Checkbox important;
+    private Checkbox licenseToKill;
 
     private final Button cancel = new Button("Cancel");
     private final Button save = new Button("Save");
 
-    private final BeanValidationBinder<SamplePerson> binder;
+    private final BeanValidationBinder<Agent> binder;
 
-    private SamplePerson samplePerson;
+    private Agent agent;
 
-    private final SamplePersonService samplePersonService;
+    private final AgentService agentService;
 
-    public AgentsView(SamplePersonService samplePersonService) {
-        this.samplePersonService = samplePersonService;
+    public AgentsView(AgentService agentService) {
+        this.agentService = agentService;
         addClassNames("agents-view");
 
         // Create UI
@@ -81,24 +81,24 @@ public class AgentsView extends Div implements BeforeEnterObserver {
         grid.addColumn("email").setAutoWidth(true);
         grid.addColumn("phone").setAutoWidth(true);
         grid.addColumn("dateOfBirth").setAutoWidth(true);
-        grid.addColumn("occupation").setAutoWidth(true);
+        grid.addColumn("codeName").setAutoWidth(true);
         grid.addColumn("role").setAutoWidth(true);
-        LitRenderer<SamplePerson> importantRenderer = LitRenderer.<SamplePerson>of(
+        LitRenderer<Agent> importantRenderer = LitRenderer.<Agent>of(
                 "<vaadin-icon icon='vaadin:${item.icon}' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: ${item.color};'></vaadin-icon>")
-                .withProperty("icon", important -> important.isImportant() ? "check" : "minus").withProperty("color",
-                        important -> important.isImportant()
+                .withProperty("icon", licenseToKill -> licenseToKill.isLicenseToKill() ? "check" : "minus").withProperty("color",
+                        important -> important.isLicenseToKill()
                                 ? "var(--lumo-primary-text-color)"
                                 : "var(--lumo-disabled-text-color)");
 
-        grid.addColumn(importantRenderer).setHeader("Important").setAutoWidth(true);
+        grid.addColumn(importantRenderer).setHeader("License To Kill").setAutoWidth(true);
 
-        grid.setItems(query -> samplePersonService.list(VaadinSpringDataHelpers.toSpringPageRequest(query)).stream());
+        grid.setItems(query -> agentService.list(VaadinSpringDataHelpers.toSpringPageRequest(query)).stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
         // when a row is selected or deselected, populate form
         grid.asSingleSelect().addValueChangeListener(event -> {
             if (event.getValue() != null) {
-                UI.getCurrent().navigate(String.format(SAMPLEPERSON_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
+                UI.getCurrent().navigate(String.format(AGENT_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
             } else {
                 clearForm();
                 UI.getCurrent().navigate(AgentsView.class);
@@ -106,7 +106,7 @@ public class AgentsView extends Div implements BeforeEnterObserver {
         });
 
         // Configure Form
-        binder = new BeanValidationBinder<>(SamplePerson.class);
+        binder = new BeanValidationBinder<>(Agent.class);
 
         // Bind fields. This is where you'd define e.g. validation rules
 
@@ -119,11 +119,11 @@ public class AgentsView extends Div implements BeforeEnterObserver {
 
         save.addClickListener(e -> {
             try {
-                if (this.samplePerson == null) {
-                    this.samplePerson = new SamplePerson();
+                if (this.agent == null) {
+                    this.agent = new Agent();
                 }
-                binder.writeBean(this.samplePerson);
-                samplePersonService.save(this.samplePerson);
+                binder.writeBean(this.agent);
+                agentService.save(this.agent);
                 clearForm();
                 refreshGrid();
                 Notification.show("Data updated");
@@ -141,14 +141,14 @@ public class AgentsView extends Div implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Optional<Long> samplePersonId = event.getRouteParameters().get(SAMPLEPERSON_ID).map(Long::parseLong);
-        if (samplePersonId.isPresent()) {
-            Optional<SamplePerson> samplePersonFromBackend = samplePersonService.get(samplePersonId.get());
-            if (samplePersonFromBackend.isPresent()) {
-                populateForm(samplePersonFromBackend.get());
+        Optional<Long> agentId = event.getRouteParameters().get(AGENT_ID).map(Long::parseLong);
+        if (agentId.isPresent()) {
+            Optional<Agent> agentFromBackend = agentService.get(agentId.get());
+            if (agentFromBackend.isPresent()) {
+                populateForm(agentFromBackend.get());
             } else {
                 Notification.show(
-                        String.format("The requested samplePerson was not found, ID = %s", samplePersonId.get()), 3000,
+                        String.format("The requested samplePerson was not found, ID = %s", agentId.get()), 3000,
                         Notification.Position.BOTTOM_START);
                 // when a row is selected but the data is no longer available,
                 // refresh grid
@@ -172,10 +172,10 @@ public class AgentsView extends Div implements BeforeEnterObserver {
         email = new TextField("Email");
         phone = new TextField("Phone");
         dateOfBirth = new DatePicker("Date Of Birth");
-        occupation = new TextField("Occupation");
+        codeName = new TextField("Occupation");
         role = new TextField("Role");
-        important = new Checkbox("Important");
-        formLayout.add(firstName, lastName, email, phone, dateOfBirth, occupation, role, important);
+        licenseToKill = new Checkbox("License To Kill");
+        formLayout.add(firstName, lastName, email, phone, dateOfBirth, codeName, role, licenseToKill);
 
         editorDiv.add(formLayout);
         createButtonLayout(editorLayoutDiv);
@@ -208,9 +208,9 @@ public class AgentsView extends Div implements BeforeEnterObserver {
         populateForm(null);
     }
 
-    private void populateForm(SamplePerson value) {
-        this.samplePerson = value;
-        binder.readBean(this.samplePerson);
+    private void populateForm(Agent value) {
+        this.agent = value;
+        binder.readBean(this.agent);
 
     }
 }

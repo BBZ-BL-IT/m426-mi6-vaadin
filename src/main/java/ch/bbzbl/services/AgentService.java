@@ -1,7 +1,7 @@
 package ch.bbzbl.services;
 
-import ch.bbzbl.entities.SamplePerson;
-import ch.bbzbl.data.SamplePersonRepository;
+import ch.bbzbl.entities.Agent;
+import ch.bbzbl.data.AgentRepository;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,19 +9,19 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SamplePersonService {
+public class AgentService {
 
-    private final SamplePersonRepository repository;
+    private final AgentRepository repository;
 
-    public SamplePersonService(SamplePersonRepository repository) {
+    public AgentService(AgentRepository repository) {
         this.repository = repository;
     }
 
-    public Optional<SamplePerson> get(Long id) {
+    public Optional<Agent> get(Long id) {
         return repository.findById(id);
     }
 
-    public SamplePerson save(SamplePerson entity) {
+    public Agent save(Agent entity) {
         return repository.save(entity);
     }
 
@@ -29,11 +29,11 @@ public class SamplePersonService {
         repository.deleteById(id);
     }
 
-    public Page<SamplePerson> list(Pageable pageable) {
+    public Page<Agent> list(Pageable pageable) {
         return repository.findAll(pageable);
     }
 
-    public Page<SamplePerson> list(Pageable pageable, Specification<SamplePerson> filter) {
+    public Page<Agent> list(Pageable pageable, Specification<Agent> filter) {
         return repository.findAll(filter, pageable);
     }
 

@@ -1,6 +1,6 @@
 package ch.bbzbl.services;
 
-import ch.bbzbl.data.SamplePerson;
+import ch.bbzbl.entities.SamplePerson;
 import ch.bbzbl.data.SamplePersonRepository;
 import java.util.Optional;
 import org.springframework.data.domain.Page;

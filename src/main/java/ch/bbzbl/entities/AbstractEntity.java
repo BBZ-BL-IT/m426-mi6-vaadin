@@ -1,4 +1,4 @@
-package ch.bbzbl.data;
+package ch.bbzbl.entities;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

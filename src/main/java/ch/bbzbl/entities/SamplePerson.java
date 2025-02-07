@@ -1,4 +1,4 @@
-package ch.bbzbl.data;
+package ch.bbzbl.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.validation.constraints.Email;

@@ -1,6 +1,6 @@
 package ch.bbzbl.views.agents;
 
-import ch.bbzbl.data.SamplePerson;
+import ch.bbzbl.entities.SamplePerson;
 import ch.bbzbl.services.SamplePersonService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;

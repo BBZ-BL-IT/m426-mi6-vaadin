@@ -148,7 +148,7 @@ public class AgentsView extends Div implements BeforeEnterObserver {
                 populateForm(agentFromBackend.get());
             } else {
                 Notification.show(
-                        String.format("The requested samplePerson was not found, ID = %s", agentId.get()), 3000,
+                        String.format("The requested agent was not found, ID = %s", agentId.get()), 3000,
                         Notification.Position.BOTTOM_START);
                 // when a row is selected but the data is no longer available,
                 // refresh grid
